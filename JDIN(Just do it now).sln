@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1 UI(Presentation layer)", "1 UI(Presentation layer)", "{208EC195-FBA2-4180-B3A5-76FB4C92B18D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 Service(Service layer)", "2 Service(Service layer)", "{2F69B139-7482-4484-9AC1-8B0BEC3FE5FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 BLL(Business logic layer)", "3 BLL(Business logic layer)", "{776CFF44-1754-4AEE-8F22-BC399213827A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 DAL(Data access layer)", "4 DAL(Data access layer)", "{F61B1B6A-30D1-4F4E-9F37-459C3502B907}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5 Model(Model layer)", "5 Model(Model layer)", "{D271776B-9164-4161-9F89-10974F313EA5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6 Comon(Public layer)", "6 Comon(Public layer)", "{DB029448-157C-4E60-9273-188A510E91BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7 UnitTest(Unit Test layer)", "7 UnitTest(Unit Test layer)", "{52C239C4-6ED9-49AE-8BFC-74CE065AEFE0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "8 EP(Else project layer)", "8 EP(Else project layer)", "{BCCE39DD-507A-438C-A4BB-2757E72A5FA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mg_console", "mg_console\mg_console.csproj", "{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D308BDCB-CAC9-42F5-B1F3-F4C93CD0594A} = {BCCE39DD-507A-438C-A4BB-2757E72A5FA0}
+	EndGlobalSection
+EndGlobal
