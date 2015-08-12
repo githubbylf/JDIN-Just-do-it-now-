@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,12 +65,13 @@ namespace mg_console
             var collection = database_1.GetCollection(collectionSettings);
             //插入函数。插入的对象可以是BsonDocument的实例对象，也可以是任何成功转换成BSON文档的类实例。例如：
             MongoCollection<Person> persons_object = database.GetCollection<Person>("Person");
+
             Random r = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
             int ages = r.Next(1,100);
             string name =  CreateSimplifiedChinese(5);
             Person p_entity = new Person()
             {
-                name = "我健康 哇哈哈",
+                name = name,
                 age = ages,
                 sex = ages % 2 == 0 ? true : false
             };
@@ -93,78 +95,106 @@ namespace mg_console
                 Console.WriteLine("QueryDocument:" + item.name);
             }
             //使用Query Builder
-            var query_2 = Queryable.Equals("name", name);
-            foreach (Person item in persons_object.Find()
+            var query_2 = Query.EQ("name",name);
+            foreach (Person item in persons_object.Find(query_2))
             {
-                Console.WriteLine("Queryable:" + item.name);
+                Console.WriteLine("Query.EQ:" + item.name);
             }
-            //使用其他任何类型，然后封装成query语句
-
             //使用FindAs来获取非默认类型的返回文档
+            var query_3 = Query<Person>.EQ(x => x.name, name);
+            foreach (Person item in persons_object.Find(query_3))
+            {
+                Console.WriteLine("Query<Person>.EQ:" + item.name);
+            }
 
+            //Save<TDocument>方法
+            //Save方法是Insert和Update的组合。如果文档的属性是有值的，它会成为Update，来对文档更新。否则将会创建一个新文档调用Insert方法。
+            //修改性别
+            var query_4 = Query.And(
+                Query.EQ("name", "你这个人真是无聊到头顶了")
+                //,Query.EQ("age",65)
+            );
 
+            Person person_bs1 = persons_object.FindOne(query_4);
+            if (person_bs1!=null)
+            {
+                person_bs1.age = r.Next(1,200);
+                persons_object.Save(person_bs1);
+            }
+            //TDocument必须要有个ID元素，否则你将调用Insert，将文档插入。
 
+            //Update方法
+            var query_5 = Query.And(
+                Query.EQ("name", "你这个人真是无聊到头顶了")
+                );
 
+            var update_1 = new UpdateDocument { 
+                {"$set",new BsonDocument("age",r.Next(1,200))}
+            };
 
+            WriteConcernResult updateP_1 = persons_object.Update(query_5, update_1);
 
+            //FindAndModify方法
+            //使用FindAndModify方法,你可以在一个原子操作里面查找一个匹配的文档并且修改更新.
+            //FindAndModify通常用于单个的文档，如果匹配了多个文档，可以使用标准的排序方法匹配到你自己想要修改的文档。
+            var query_6 = Query.And(Query.EQ("name", "你这个人真是无聊到头顶了"),Query.EQ("sex",true));
+            var sortby_1 = SortBy.Descending("age");
+            var update_3 = Update.Set("age", 112).Set("sex", false);
+            var results_1 = persons_object.FindAndModify(query_6, sortby_1, update_3, true);
+            var document_1 = results_1.ModifiedDocument;
 
+            //MapReduce方法
+            //Map/Reduce是一种从collection中聚合数据的方法。每个文档（或者使用选择query语句产生的是子集）被发送至map函数，
+            //map函数会产生一个中间的值。这个中间的值会传送至reduce函数进行数据的聚合。 
+            //下面的例子采集自MongoDB：The Definitive Guide（MongDB权威解析）的87页。它计算在collection中找到的每个key要被计算多少次
+            //LT=>Less Than
+            //GT=>More Than
+            //EQ=>Equels
+            //IN 
+            var query = Query.And(Query.LT("age", 100), Query.GT("age", 90));
+            var cursor = persons_object.Find(query);
+            var firstBook = cursor.FirstOrDefault();
+            var lastBook = cursor.LastOrDefault();
 
+            //Query.All("name", "a", "b");//通过多个元素来匹配数组
 
+            //Query.And(Query.EQ("name", "a"), Query.EQ("title", "t"));//同时满足多个条件
 
-            //var connectionString = "mongodb://localhost";
-            //var client = new MongoClient(connectionString);
-            //var server = client.GetServer();
+            //Query.EQ("name", "a");//等于
 
+            //Query.Exists("type", true);//判断键值是否存在
 
-            ////获取实体集合(foo)
-            //var database = server.GetDatabase("foo");
-            //MongoCollection<Person> data = database.GetCollection<Person>("Person");
-            //List<Person> list = new List<Person>();
-            //list.AddRange(data.FindAll());
+            //Query.GT("value", 2);//大于>
 
-            ////添加实体
-            //Person p1 = new Person();
-            //p1.name = CreateSimplifiedChinese(3);
-            //p1.age = 18;
-            //p1.sex = true;
-            //data.Insert(p1);
-            //data.Insert<Person>(p1);
+            //Query.GTE("value", 3);//大于等于>=
 
-            ////
+            //Query.In("name", "a", "b");//包括指定的所有值,可以指定不同类型的条件和值
 
+            //Query.LT("value", 9);//小于<
 
+            //Query.LTE("value", 8);//小于等于<=
 
+            //Query.Mod("value", 3, 1);//将查询值除以第一个给定值,若余数等于第二个给定值则返回该结果
 
+            //Query.NE("name", "c");//不等于
 
-            //Console.ReadKey();
+            //Query.Nor(Array);//不包括数组中的值
 
-            ////Person p1 = new Person();
-            ////p1.name = "zhangsan";
+            //Query.Not("name");//元素条件语句
 
+            //Query.NotIn("name", "a", 2);//返回与数组中所有条件都不匹配的文档
 
-            ////data.Insert(p1);
-            ////data.Insert<Person>(p1);
+            //Query.Or(Query.EQ("name", "a"), Query.EQ("title", "t"));//满足其中一个条件
 
-            ////插入100W条测试
-            ////DateTime dt1 = new DateTime();
-            ////for (int i = 1; i <= 1000000; i++)
-            ////{
-            ////    Random r = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
-            ////    Person p = new Person();
-            ////    p.name = CreateSimplifiedChinese(3);
-            ////    p.age = r.Next(1, 120);
-            ////    p.sex = p.age % 2 == 0 ? true : false;
-            ////    data.Insert<Person>(p);
-            ////    if (1 % 1000 == 0)
-            ////    {
-            ////        DateTime dt2 = new DateTime();
+            //Query.Size("name", 2);//给定键的长度
 
-            ////        Console.WriteLine(i.ToString() + ":" + p.name);
-            ////    }
-                
-            ////}
+            //Query.Type("_id", BsonType.ObjectId);//给定键的类型
+
+            //Query.Where(BsonJavaScript);//执行JavaScript
+
+            //Query.Matches("Title", str);//模糊查询 相当于sql中like  -- str可包含正则表达式
             
-            
+            Console.ReadKey();
         }
 
 
