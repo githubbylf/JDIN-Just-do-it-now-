@@ -193,6 +193,7 @@ namespace mg_console
             //Query.Where(BsonJavaScript);//执行JavaScript
 
             //Query.Matches("Title", str);//模糊查询 相当于sql中like  -- str可包含正则表达式
+
             
             Console.ReadKey();
         }
